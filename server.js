@@ -1,31 +1,43 @@
-const express=require("express");
-const app=express();
-const path=require("path");
-const cors=require('cors');
+require('dotenv').config();
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+const path = require('path');
+const cors = require('cors');
+// Cors 
+const corsOptions = {
+  // origin: process.env.ALLOWED_CLIENTS.split(',')
+  origin: true
+  // ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:3300']
+}
 
-const PORT=process.env.PORT || 3000;
+// Default configuration looks like
+// {
+//     "origin": "*",
+//     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     "preflightContinue": false,
+//     "optionsSuccessStatus": 204
+//   }
+
+app.use(cors(corsOptions))
 app.use(express.static('public'));
-app.use(express.json())
 
-const connectDB=require('./config/db');
+const connectDB = require('./config/db');
 connectDB();
 
-const corsOptions={
-    origin:process.env.ALLOWED_CLIENTS.split(',')
-    // ['http://localhost:3000','http://localhost:5000','http://localhost:3300']
-}
-app.use(cors(corsOptions))
+app.use(express.json());
 
-//template engine
-app.set('views',path.join(__dirname,'/views'));
-app.set('view engine','ejs');
+app.set('views', path.join(__dirname, '/views'));
+app.set('view engine', 'ejs');
 
-// routes
-app.use("/api/files",require('./routes/files'));
-app.use("/files",require('./routes/show'));
-app.use('/files/download',require('./routes/download'));
-
-app.listen(PORT,()=>
+// Routes 
+app.use('/api/files', require('./routes/files'));
+app.use('/files', require('./routes/show'));
+app.use('/files/download', require('./routes/download'));
+app.use((req,res)=>
 {
-    console.log('Listening on port ${PORT}');
+  res.status(404).send('<h1>404, Page Not Found😵😵</h1>')
 })
+
+
+app.listen(PORT, console.log(`Listening on port ${PORT}.`));

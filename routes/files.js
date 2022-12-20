@@ -18,11 +18,11 @@ let upload = multer({
 }).single('myfile');
 
 router.post('/', (req, res) => {
-
     // store files
 
     upload(req, res, async (err) => {
         // validate request
+        console.log(req.file.filename);
         if (err) {
             console.log(err)
             return res.status(500).send({ error: err.message })
